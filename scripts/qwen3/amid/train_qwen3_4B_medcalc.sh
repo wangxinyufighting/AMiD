@@ -32,7 +32,7 @@ LM_DATA_DIR="${PROCESSED_DATA_DIR}"
 # Hyperparameters
 BATCH_SIZE=${8-4}
 LR=${9-0.00005}
-GRAD_ACC=2
+GRAD_ACC=1
 EVAL_BATCH_SIZE=8
 
 # Length from config
@@ -98,7 +98,7 @@ OPTS+=" --seed ${SEED}"
 
 # deepspeed
 OPTS+=" --deepspeed"
-OPTS+=" --deepspeed_config ${BASE_PATH}/configs/deepspeed/ds_config_zero2_bf16.json"
+OPTS+=" --deepspeed_config ${BASE_PATH}/configs/deepspeed/ds_config_zero3_offload_bf16.json"
 
 # type
 OPTS+=" --type adaptive-amid"
