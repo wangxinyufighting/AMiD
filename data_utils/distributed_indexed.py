@@ -132,23 +132,23 @@ class DistributedMMapIndexedDataset(torch.utils.data.Dataset):
 
     def _probe_data_path(self, path, name, rank_total):
         print_rank("Probing Dataset")
-            
+
         state = 0
         history = {-1:(0, 0)}
         for state in range(np.iinfo(np.int32).max):
-            source_file = path + name + f"_{state}"
+            source_file = os.path.join(path, name + f"_{state}")
             if self.exists(source_file):
                 index = self.Index(index_file_path(source_file))
                 history[state] = (history[state-1][1], history[state-1][1] + len(index))
             else:
                 break
-            
+
         print_rank(f"Probing end. Max data state {state}, total length {history[state-1][1]}")
-        
+
         return state, history
 
     def __getstate__(self):
-        return self._path + self._name + "_%d"%(self._state)
+        return os.path.join(self._path, self._name + "_%d"%(self._state))
 
     def __setstate__(self, state):
         self._state = state
@@ -163,7 +163,7 @@ class DistributedMMapIndexedDataset(torch.utils.data.Dataset):
 
         self._state = state
 
-        source_file = path + name + f"_{self._state}"
+        source_file = os.path.join(path, name + f"_{self._state}")
         self._index = self.Index(index_file_path(source_file))
         self._bin_buffer_mmap = np.memmap(data_file_path(source_file), mode='r', order='C')
         self._bin_buffer = memoryview(self._bin_buffer_mmap)
